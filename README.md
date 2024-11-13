@@ -197,3 +197,142 @@ Sebagai contoh, kita dapat me-_wrap_ sebuah widget dalam suatu <code>Container</
 ![alt text](readme_assets/image.png)
 
 Dengan ini, kita dapat memitigasi salah satu kekurangan dari Flutter, yakni banyaknya nesting yang dapat membuat kode sulit dibaca. Dengan menggunakan extension <code>Flutter</code>, kita dapat menambahkan dan menghapus widget dengan mudah dan bebas bug.
+
+## Tugas Individu 8
+
+### Apa kegunaan const di Flutter? Jelaskan apa keuntungan ketika menggunakan const pada kode Flutter. Kapan sebaiknya kita menggunakan const, dan kapan sebaiknya tidak digunakan?
+
+Di Flutter, `const` digunakan untuk membuat widget atau objek yang _immutable_ dan sudah ditentukan pada saat _compile time_. Penggunaan `const` menghemat memori dan meningkatkan performa, karena objek `const` hanya dibuat satu kali meskipun digunakan berulang kali.
+
+Dengan menggunakan `const`, Flutter hanya membuat satu instance dari objek `const`. Hal ini mengurangi pengurangan memori karena data sudah ada sejak waktu kompilasi.
+
+`const` biasa digunakan untuk widget yang nilainya tidak berubah, seperti `Text('Hello')` atau `Icon(Icons.star)`, terutama dalam `StatelessWidget`.
+
+```dart
+const Text('Hello World');
+const Icon(Icons.favorite);
+```
+
+`const` sebaiknya tidak digunakan apabila objek memiliki nilai yang dinamis, misalnya data API atau input pengguna, serta pada `StatefulWidget` atau elemen yang berubah.
+
+```dart
+Text('Dynamic Text: ${DateTime.now()}');
+Container(color: Colors.blue);
+```
+
+Secara umum, `const` digunakan untuk komponen statis yang nilainya sudah diketahui sebelum kompilasi.
+
+### Jelaskan dan bandingkan penggunaan Column dan Row pada Flutter. Berikan contoh implementasi dari masing-masing layout widget ini!
+
+Sesuai nama mereka, `Row` dan `Column` merupakan _widget_ layout yang memungkinkan kita untuk mengatur komponen supaya terurut secara horizontal dan vertikal.
+
+Sebagai contoh, apabila kita ingin menyusun beberapa elemen secara horizontal, kita dapat menggunakan _widget_ `Row`:
+
+```dart
+Row(
+  children: [
+    Widget1(...),
+    Widget2(...),
+    Widget3(...),
+  ]
+)
+```
+
+Ketiga _widget_ ini akan disusun dari kiri ke kanan.
+
+Apabila kita ingin menyusun beberapa elemen secara vertikal, kita dapat menggunakan _widget_ `Column`:
+
+```dart
+Column(
+  children: [
+    Widget1(...),
+    Widget2(...),
+    Widget3(...),
+  ]
+)
+```
+
+Ketiga _widget_ ini akan disusun dari atas ke bawah.
+
+Kita dapat melakukan nesting dari `Column` dan `Row` untuk melakukan penyusunan _widget_ dalam dua dimensi.
+
+```dart
+Column(
+  children: [
+    Row(
+      Widget1(...),
+      Widget2(...),
+      Widget3(...),
+    ),
+    Row(
+      Widget4(...),
+      Widget5(...),
+      Widget6(...),
+    ),
+    Row(
+      Widget7(...),
+      Widget8(...),
+      Widget9(...),
+    ),
+  ]
+)
+```
+
+### Sebutkan apa saja elemen input yang kamu gunakan pada halaman form yang kamu buat pada tugas kali ini. Apakah terdapat elemen input Flutter lain yang tidak kamu gunakan pada tugas ini? Jelaskan!
+
+Saya menggunakan `TextFormField` untuk meng-handle form input dari user. Karena salah satu field yang saya butuhkan berbentuk JSON, saya kurang tahu cara meng-handle hal tersebut. Oleh karena itu, pada form saya hanya terdapat `TextFormField` dan `ElevatedButton` untuk tombol submit.
+
+Ternyata, terdapat beberapa jenis input lain, seperti `DropdownButton`, `DatePicker`, `TimePicker`, `Checkbox`, dll. Input-input ini tidak saya gunakan karena tidak diperlukan untuk aplikasi Goodbye::Stale.
+
+### Bagaimana cara kamu mengatur tema (theme) dalam aplikasi Flutter agar aplikasi yang dibuat konsisten? Apakah kamu mengimplementasikan tema pada aplikasi yang kamu buat?
+
+Saya mengatur tema aplikasi dengan mengatur properti `colorScheme` pada _widget_ utama `MaterialApp`. Dengan adanya color scheme dari dasar aplikasi, kita hanya perlu mengacu pada warna-warna tertentu dari color scheme tersebut. Sebagai contoh, untuk menggunakan warna primer dari aplikasi, kita hanya perlu merujuk pada `Theme.of(context).colorScheme.primary`.
+
+Saya menggunakan color scheme yang di-generate oleh Flutter dengan seed color hitam. Saya rasa bahwa hal ini akan dapat membuat warna aplikasi cenderung gelap dan nyaman dipandang.
+
+```dart
+Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Goodbye::Stale',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(),
+    );
+  }
+```
+
+### Bagaimana cara kamu menangani navigasi dalam aplikasi dengan banyak halaman pada Flutter?
+
+Saya menangani navigasi pada aplikasi dengan menggunakan _widget_ `Navigator`. Untuk berpindah dari suatu halaman ke halaman lain, kita pertama harus memastikan kalau halaman tersebut merupakan `MaterialPageRoute` dengan melakukan wrapping _widget_ yang dituju dengan class `MaterialPageRoute`.
+
+Sebagai contoh, berikut adalah implementasi navigasi saya dari app drawer:
+
+```dart
+ListTile(
+  leading: const Icon(Icons.home),
+  title: const Text('Home'),
+  onTap: () {
+    Navigator.push(context,
+      MaterialPageRoute(
+        builder: (context) => const MyHomePage()
+      )
+    );
+  },
+),
+```
+
+Apabila sebuah aplikasi memiliki sangat banyak halaman, maka kita dapat juga menggunakan named route, yang mirip dengan endpoint aplikasi. Hal ini memungkinkan kita untuk melakukan routing ke suatu halaman tanpa harus mengetahui nama dari _widget_ yang bersangkutan.
+
+```dart
+MaterialApp(
+  initialRoute: '/',
+  routes: {
+    '/': (context) => HomePage(),
+    '/second': (context) => SecondPage(),
+  },
+);
+
+Navigator.pushNamed(context, '/second');
+```

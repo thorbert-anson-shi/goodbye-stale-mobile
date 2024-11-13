@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:goodbye_stale_mobile/home.dart';
+import 'package:goodbye_stale_mobile/screens/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
         useMaterial3: true,
       ),
-      home: MyHomePage(),
+      home: const MyHomePage(),
     );
   }
 }
