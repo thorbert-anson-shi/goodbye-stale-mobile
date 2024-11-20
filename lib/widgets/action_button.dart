@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:goodbye_stale_mobile/screens/list_recipes.dart';
 import 'package:goodbye_stale_mobile/screens/new_recipe_form.dart';
 
 class ActionButton extends StatelessWidget {
@@ -19,6 +20,10 @@ class ActionButton extends StatelessWidget {
         if (text.data == "Tambah Produk") {
           Navigator.push(context,
               MaterialPageRoute(builder: (context) => const NewRecipeForm()));
+          return;
+        } else if (text.data == "Lihat Daftar Produk") {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const ListRecipes()));
           return;
         }
 

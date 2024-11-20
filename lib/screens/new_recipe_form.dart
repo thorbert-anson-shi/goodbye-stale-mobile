@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class NewRecipeForm extends StatefulWidget {
   const NewRecipeForm({super.key});
@@ -12,6 +14,8 @@ class NewRecipeFormState extends State<NewRecipeForm> {
   String _name = "";
   int _price = 0;
   String _description = "";
+  String _ingredients = "";
+  String _category = "";
 
   String? _validateName(String? value) {
     if (value == null || value.isEmpty) {
@@ -42,6 +46,7 @@ class NewRecipeFormState extends State<NewRecipeForm> {
 
   @override
   Widget build(BuildContext context) {
+    final request = context.watch<CookieRequest>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('New Recipe Form'),
@@ -91,12 +96,47 @@ class NewRecipeFormState extends State<NewRecipeForm> {
                 maxLines: 3,
               ),
               const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Ingredients',
+                    icon: Icon(Icons.list)),
+                onChanged: (String? value) {
+                  setState(() {
+                    _ingredients = value!;
+                  });
+                },
+                maxLines: 3,
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Category',
+                    icon: Icon(Icons.category)),
+                onChanged: (String? value) {
+                  setState(() {
+                    _category = value!;
+                  });
+                },
+              ),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
+                        final response = await request.postJson(
+                          'http://127.0.0.1:8000/create_product_ajax/',
+                          {
+                            'name': _name,
+                            'price': _price,
+                            'description': _description,
+                            'ingredients': _ingredients,
+                            'category': _category,
+                          },
+                        );
                         showDialog(
                           context: context,
                           builder: (context) {
