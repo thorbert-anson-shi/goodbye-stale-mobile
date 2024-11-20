@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -128,15 +130,67 @@ class NewRecipeFormState extends State<NewRecipeForm> {
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
                         final response = await request.postJson(
-                          'http://127.0.0.1:8000/create_product_ajax/',
-                          {
-                            'name': _name,
-                            'price': _price,
-                            'description': _description,
-                            'ingredients': _ingredients,
-                            'category': _category,
-                          },
-                        );
+                            'http://127.0.0.1:8000/create_product_ajax/',
+                            jsonEncode(
+                              {
+                                'name': _name,
+                                'price': int.parse(_price.toString()),
+                                'description': _description,
+                                'ingredients': _ingredients,
+                                'category': _category,
+                              },
+                            ));
+                        if (response['status'] == true) {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Recipe saved!'),
+                                content: SingleChildScrollView(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Name: $_name'),
+                                      Text('Price: $_price'),
+                                      Text('Description: $_description'),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(
+                                          context); // Exit from dialog
+                                      Navigator.pop(context); // Exit form page
+                                      _formKey.currentState!.reset();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: const Text('Error'),
+                                content: Text(
+                                    response['message'] ?? 'An error occurred'),
+                                actions: [
+                                  TextButton(
+                                    child: const Text('OK'),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
                         showDialog(
                           context: context,
                           builder: (context) {
